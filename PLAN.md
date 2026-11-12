@@ -122,3 +122,10 @@ Pistes mesurées sur le match entier et écartées :
 - visée de la caméra (homographie) comme substitut du ballon : elle ne le suit qu'à 12 m près ;
 - sens du panoramique de la caméra : d'accord avec l'équipe en contrôle 55 à 70 % du temps ;
 - sens de déplacement collectif des joueurs : 60 %.
+- modèle auto-entraîné (ballon caché, joueurs seuls, 105 indicateurs avec fenêtres de temps,
+  entraîné sur une mi-temps et testé sur l'autre) : il retrouve la bonne équipe 83 % du temps sur
+  les images sûres. Branché comme indice faible, il ne change pas le spellF1 des 5 minutes quand il
+  est limité aux images sans ballon (macroF1 +0,015), et il le dégrade quand il s'applique plus
+  largement, car ses indicateurs lissés brouillent l'instant des changements. Non intégré.
+
+Le tracking seul est considéré comme épuisé : la suite est la vidéo (tour vidéo du plan).
