@@ -86,6 +86,52 @@ def dead_gaps(visible, slow, blocks):
     return out
 
 
+def last_kicker(ball, d_home, d_away, usable):
+    """Équipe qui a frappé le ballon en dernier : HOME, AWAY, ou -1 si on ne sait pas.
+
+    Une frappe (passe, tir, contrôle orienté) est un changement brusque de la vitesse du ballon :
+    on compare sa vitesse sur les KICK_LAG images avant et après chaque image, et on garde les
+    pics au-dessus de KICK_DV_MS. La frappe est attribuée au joueur le plus proche s'il est à moins
+    de KICK_RADIUS_M et nettement plus près que le premier adversaire.
+
+    Entre deux frappes le ballon appartient à celui qui l'a frappé : c'est ce qui donne un avis
+    pendant qu'une passe est en route, loin de tout joueur. L'avis expire après KICK_HOLD images,
+    et dès qu'une frappe non attribuable survient ou que le ballon n'est plus exploitable.
+    """
+    lag = config.KICK_LAG
+    position = ball.astype(np.float64)
+    before = np.full_like(position, np.nan)
+    after = np.full_like(position, np.nan)
+    step = (position[lag:] - position[:-lag]) * config.FPS / lag
+    before[lag:] = step
+    after[:-lag] = step
+    change = np.sqrt(((after - before) ** 2).sum(axis=1))
+    change = np.where(np.isnan(change), 0.0, change)
+
+    # Pic : la plus forte variation dans son voisinage de +/- lag images.
+    padded = np.concatenate((np.zeros(lag), change, np.zeros(lag)))
+    windows = np.lib.stride_tricks.sliding_window_view(padded, 2 * lag + 1)
+    kick = usable & (change > config.KICK_DV_MS) & (change >= windows.max(axis=1))
+
+    near = np.minimum(d_home, d_away) < config.KICK_RADIUS_M
+    with np.errstate(invalid="ignore"):     # inf - inf quand aucun joueur n'est vu
+        clear = np.abs(d_home - d_away) > config.DUEL_MARGIN_M
+    side = np.where(d_home < d_away, HOME, AWAY)
+
+    owner = np.full(len(ball), -1, dtype=np.int8)
+    current, since = -1, 0
+    for t in range(len(ball)):
+        if not usable[t]:
+            current = -1
+            continue
+        if kick[t]:
+            current = int(side[t]) if (near[t] and clear[t]) else -1
+            since = t
+        if current >= 0 and t - since <= config.KICK_HOLD:
+            owner[t] = current
+    return owner, kick
+
+
 def tag_scores(events, blocks, n_frames):
     """Scores (N, 3) tirés du Smart Tagging : arrêts avant les reprises, équipe après."""
     scores = np.zeros((n_frames, 3), dtype=np.float32)
@@ -162,6 +208,10 @@ def build(tracking, events, blocks):
     scores = np.zeros((len(ball), 3), dtype=np.float32)
     scores[home_has & ~dead, H] = config.W_TEAM
     scores[away_has & ~dead, A] = config.W_TEAM
+
+    kicker, kick = last_kicker(ball, d_home, d_away, visible & ~dead)
+    scores[kicker == HOME, H] += config.W_KICK
+    scores[kicker == AWAY, A] += config.W_KICK
     scores[still, D] = config.W_DEAD_STILL
     scores[out, D] = config.W_DEAD_OUT
 
@@ -171,5 +221,6 @@ def build(tracking, events, blocks):
     scores += tag_scores(events, blocks, len(ball))
 
     info = {"visible": visible, "home_has": home_has & ~dead, "away_has": away_has & ~dead,
-            "out": out, "still": still, "gap": gap, "stopped": stopped}
+            "out": out, "still": still, "gap": gap, "stopped": stopped,
+            "kicker": kicker >= 0}
     return scores, info

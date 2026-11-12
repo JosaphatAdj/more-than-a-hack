@@ -60,7 +60,8 @@ def report(labels, info, game=GAME):
                       ("indice extérieur", "away_has"), ("ballon hors terrain", "out"),
                       ("ballon immobile", "still"),
                       ("ballon perdu, lent", "gap"),
-                      ("tout le monde arrêté", "stopped")):
+                      ("tout le monde arrêté", "stopped"),
+                      ("dernier frappeur", "kicker")):
         print("  {:<20} {:5.1f} %".format(name, 100.0 * info[key][graded].sum() / n))
     print("réponses :")
     for letter in LETTERS:

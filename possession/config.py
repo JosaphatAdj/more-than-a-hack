@@ -8,13 +8,24 @@ l'interdit. Les distances sont en mètres, les durées en images (25 images = 1 
 FPS = 25
 
 # Nom du fichier produit dans evaluation/results/.
-RUN_NAME = "tour4"
+RUN_NAME = "tour5"
 
 # -- qui contrôle le ballon ----------------------------------------------------------------------
 # Un joueur "a" le ballon s'il est à moins de R_CONTROL_M du ballon. Si le joueur le plus proche de
 # l'autre équipe est presque aussi près (écart < DUEL_MARGIN_M), c'est un duel : pas d'avis.
 R_CONTROL_M = 2.0
 DUEL_MARGIN_M = 0.5
+
+# -- qui a frappé le ballon en dernier -----------------------------------------------------------
+# Une frappe est un changement de vitesse du ballon d'au moins KICK_DV_MS entre les KICK_LAG images
+# d'avant et celles d'après. La trajectoire fournie est lissée : sur 3 images presque rien ne
+# dépasse 4 m/s, il faut une demi-seconde pour voir une passe partir. Mesuré sur le match entier,
+# sans vérité terrain : ces valeurs donnent environ une frappe toutes les 3 s de jeu, attribuable
+# à une équipe 4 fois sur 5, et d'accord à 89 % avec l'indice de proximité quand les deux existent.
+KICK_LAG = 12
+KICK_DV_MS = 6.0
+KICK_RADIUS_M = 3.0
+KICK_HOLD = 75
 
 # -- jeu arrêté (D) ------------------------------------------------------------------------------
 # Ballon vu en dehors des lignes, avec une marge pour l'imprécision du tracking.
@@ -65,6 +76,7 @@ PHASE_FRACTION = 0.4
 
 # -- poids des indices, par image ----------------------------------------------------------------
 W_TEAM = 1.0        # une équipe contrôle seule le ballon
+W_KICK = 0.5        # l'équipe a frappé le ballon en dernier (passe en route)
 W_DEAD_OUT = 2.0    # ballon hors du terrain
 W_DEAD_STILL = 1.0  # ballon immobile
 W_DEAD_GAP = 0.5    # ballon perdu de vue, joueurs lents

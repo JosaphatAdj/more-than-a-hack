@@ -111,3 +111,14 @@ trous limités aux images lentes 0,459 / 0,717 ; + « tout le monde arrêté, ba
 0,459 / 0,759 ; + changement d'équipe placé au milieu du trou sans avis 0,482 / 0,767.
 `tour4` devient la référence. `tour2.csv` et `tour3.csv` ne sont plus reproductibles tels quels
 (la règle des trous a changé) ; ils restent dans results/ pour mémoire.
+| tour5 (+ dernier frappeur du ballon) | 0,5436 | 0,7587 | 22 | 334 | 48,3 % |
+
+Tour 5 : frappes détectées par les changements de vitesse du ballon (fenêtre de 12 images, car la
+trajectoire fournie est lissée). « La dernière équipe à avoir frappé » donne un avis pendant les
+passes : la couverture des images à ballon visible passe de 51 % à 81 %. Retard moyen des
+changements : de −8 à −3 images. `tour5` devient la référence.
+
+Pistes mesurées sur le match entier et écartées :
+- visée de la caméra (homographie) comme substitut du ballon : elle ne le suit qu'à 12 m près ;
+- sens du panoramique de la caméra : d'accord avec l'équipe en contrôle 55 à 70 % du temps ;
+- sens de déplacement collectif des joueurs : 60 %.
