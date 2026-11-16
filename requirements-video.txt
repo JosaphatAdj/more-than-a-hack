@@ -1,0 +1,9 @@
+# Uniquement pour video/ (détection du ballon dans la vidéo), sur une machine avec GPU NVIDIA.
+# possession/ n'en a pas besoin : voir requirements-lock.txt.
+#
+# IMPORTANT : installer d'abord PyTorch avec le support GPU (voir video/README.md, étape 3).
+# Installé d'ici sans cette étape, PyTorch arrive en version CPU et tout tourne 20 à 50 fois
+# plus lentement.
+ultralytics
+opencv-python
+numpy
