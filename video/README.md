@@ -4,9 +4,10 @@ But : retrouver le ballon sur les images où le tracking l'a perdu (41 % des ima
 produire un petit fichier `data/cache/ball_video.csv` que `possession/` utilisera pour combler
 ces trous.
 
-**État du code : écrit et vérifié pour la géométrie (homographie, tuiles, choix des images), mais
-jamais exécuté avec le modèle ni avec la vidéo.** La première exécution est donc aussi un test du
-code : en cas d'erreur, copier le message complet.
+**État du code.** Vérifié sur la vraie vidéo, sans GPU : lecture des images, alignement avec le
+tracking, homographie, tuiles et fabrication des exemples (`make_dataset`). **Jamais exécuté :
+l'appel au modèle YOLO** (`evaluate`, `train`, `detect`). La première exécution de ces trois
+scripts est donc aussi un test du code : en cas d'erreur, copier le message complet.
 
 Toutes les commandes se lancent depuis la racine du dépôt, dans PowerShell.
 
@@ -91,7 +92,7 @@ téléchargés. Le script affiche un tableau :
 ## 5. Affiner le modèle (1 à 2 heures)
 
 ```powershell
-python -m video.make_dataset      # 10 à 20 min : fabrique les exemples, sans annotation humaine
+python -m video.make_dataset      # environ 10 min : fabrique les exemples, sans annotation humaine
 python -m video.train             # 30 à 60 min sur une RTX 3050
 python -m video.evaluate          # teste le modèle affiné sur des minutes jamais vues
 ```

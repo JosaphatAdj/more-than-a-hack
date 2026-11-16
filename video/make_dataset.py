@@ -24,14 +24,19 @@ Choix
 
 import argparse
 import os
+import shutil
 
 import numpy as np
 
 from . import common
 
 BALL_DIAMETER_M = 0.22
-BOX_MARGIN = 1.6          # le rectangle est un peu plus large que le ballon
-BOX_MIN_PX = 6.0
+# Le rectangle est bien plus large que le ballon (6 px), et c'est voulu. Mesuré sur la vidéo : un
+# petit objet clair se trouve à moins de 3 px de la position du tracking sur 45 % des images
+# seulement, à moins de 10 px sur 80 % (témoin à côté : 17 %). Le tracking place donc le ballon à
+# quelques pixels près, pas au pixel près. Un rectangle de 24 px contient le ballon malgré ce
+# décalage ; la précision perdue, moins d'un mètre sur le terrain, ne gêne pas nos règles.
+BOX_PX = 24.0
 MAX_SPEED_MS = 10.0
 EDGE_PX = 30              # le ballon est au moins à cette distance du bord de la découpe
 NEGATIVE_EVERY = 3
@@ -96,6 +101,9 @@ def main():
     frames = choose_frames(tracking, uv, valid, args.frames, rng)
     pitch = tracking["pitch"]
 
+    # On repart d'un dossier vide : les exemples d'un essai précédent ne doivent pas se mélanger.
+    if os.path.isdir(common.DATASET_DIR):
+        shutil.rmtree(common.DATASET_DIR)
     for kind in ("images", "labels"):
         for split in ("train", "val"):
             common.ensure_dir(os.path.join(common.DATASET_DIR, kind, split))
@@ -105,8 +113,8 @@ def main():
     for done, (index, frame) in enumerate(common.read_frames(frames), 1):
         u, v = uv[index]
         split = "val" if is_validation(index) else "train"
-        box = max(BALL_DIAMETER_M / common.metres_per_pixel(matrices[index], u, v, pitch),
-                  BOX_MIN_PX) * BOX_MARGIN
+        box = max(BALL_DIAMETER_M / common.metres_per_pixel(matrices[index], u, v, pitch) + 18.0,
+                  BOX_PX)
         sizes.append(box)
 
         x, y = crop_origin(u, v, rng)
