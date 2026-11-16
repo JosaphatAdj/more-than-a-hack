@@ -1,0 +1,12 @@
+# Versions exactes avec lesquelles la soumission a été produite et vérifiée.
+# Python 3.14.7, Windows 11.
+#
+#   python -m venv .venv
+#   .venv/Scripts/python -m pip install -r requirements-lock.txt      (Windows)
+#   .venv/bin/python -m pip install -r requirements-lock.txt          (macOS / Linux)
+#
+# possession/ n'a besoin que de numpy ; pandas sert au scorer et au validateur du kit.
+numpy==2.5.4
+pandas==3.1.1
+python-dateutil==4.0.0
+tzdata==2026.6
