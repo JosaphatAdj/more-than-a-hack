@@ -7,3 +7,14 @@
 ultralytics
 opencv-python
 numpy
+
+pandas
+opencv-python
+matplotlib
+tqdm
+torch
+torchvision
+transformers>=4.57
+accelerate
+pillow
+huggingface_hub
