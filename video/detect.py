@@ -47,6 +47,9 @@ def main():
     parser.add_argument("--device", default="0")
     parser.add_argument("--batch", type=int, default=16)
     parser.add_argument("--out", default=common.DETECTIONS_PATH)
+    parser.add_argument("--targets", default=None,
+                        help="fichier .npy des images à traiter (sinon : toutes les images sans "
+                             "ballon). Voir python -m video.targets")
     args = parser.parse_args()
 
     device = args.device if args.device == "cpu" else int(args.device)
@@ -55,7 +58,10 @@ def main():
     common.check_video()
     tracking = common.load_tracking()
     matrices, valid = common.load_homography()
-    frames = frames_to_process(tracking, valid, args.step, args.all)
+    if args.targets:
+        frames = np.load(args.targets)[::args.step]
+    else:
+        frames = frames_to_process(tracking, valid, args.step, args.all)
     pitch = tracking["pitch"]
 
     common.ensure_dir(os.path.dirname(args.out))
