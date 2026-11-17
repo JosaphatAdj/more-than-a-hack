@@ -129,3 +129,15 @@ Pistes mesurées sur le match entier et écartées :
   largement, car ses indicateurs lissés brouillent l'instant des changements. Non intégré.
 
 Le tracking seul est considéré comme épuisé : la suite est la vidéo (tour vidéo du plan).
+
+## Vidéo (17 novembre)
+
+- YOLO abandonné pour ce rendu : pas de GPU sur la machine de travail, et PyTorch impossible à
+  télécharger (réseau à environ 12 Ko/s, soit plusieurs heures). Les scripts `video/` restent
+  prêts pour une machine avec GPU.
+- Cibles : sur les 64 643 images notées sans ballon, 55 553 portent déjà un indice d'arrêt ;
+  seules 8 883 n'ont aucun avis (`python -m video.targets`).
+- Détecteur classique OpenCV (objet petit et clair, mouvement entre images) testé en simulant des
+  trous sur des passages où le tracking voit le ballon : à 1 s il fait moins bien qu'une simple
+  interpolation (61 % contre 67 % à moins de 20 px), à 2 s un peu mieux (52 % contre 39 %), à 3 s
+  les deux échouent (moins de 30 %). Pas assez fiable : non intégré. `tour5` reste la soumission.
