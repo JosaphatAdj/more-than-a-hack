@@ -141,3 +141,29 @@ Le tracking seul est considéré comme épuisé : la suite est la vidéo (tour v
   trous sur des passages où le tracking voit le ballon : à 1 s il fait moins bien qu'une simple
   interpolation (61 % contre 67 % à moins de 20 px), à 2 s un peu mieux (52 % contre 39 %), à 3 s
   les deux échouent (moins de 30 %). Pas assez fiable : non intégré. `tour5` reste la soumission.
+
+## Tour 6 : revue des règles discutables (17 novembre)
+
+Chaque règle jugée discutable est mesurée sur le match entier, sans vérité terrain. Aucune ne
+justifie un changement : **pas de tour 6**, `tour5` reste la version du package.
+
+- **Arrêt forcé après un but** (4 buts, 71 à 251 s jusqu'au coup d'envoi) : au début du tag, les
+  joueurs marchent déjà (0,3 à 1,2 m/s ; 2,3 m/s pour le 4e but, juste après une attaque à
+  4 m/s), puis le ballon repart vers le rond central. Le tag commence bien au but : règle gardée.
+- **Ballon immobile 2 s** : 1,6 % des images, 23 séries. Le cas du gardien qui tient le ballon
+  (surface, joueur au contact, joueurs qui courent) touche 0,02 % des images : règle gardée.
+- **Ballon perdu + joueurs lents** : 34 % des images notées, 48 % de D au total. Cela donne
+  environ 55 min de jeu effectif sur 106 min notées, dont 11 min d'arrêt après les buts. C'est
+  l'ordre de grandeur habituel d'un match. Les 20 % de D des 5 minutes publiques viennent d'un
+  passage très actif : règle gardée.
+- **Instant de reprise fixe (5 s après le début du tag)** : on l'a remplacé, tag par tag, par la
+  première frappe attribuable. Sur les corners, l'équipe du frappeur ne correspond à celle du tag
+  que 3 fois sur 11, car le ballon est invisible au point de corner 83 % du temps. Détection
+  non fiable : décalage fixe gardé.
+- **Équipe des touches (tag « N/A »)** : on l'a déduite de l'équipe en possession avant l'arrêt,
+  en testant cette idée sur les tags dont l'équipe est connue. Elle tient pour les corners
+  (9 sur 12), mais pas pour les six mètres (6 sur 10, proche du hasard). Non intégré.
+- **Dernier frappeur et déviations** : 1 033 frappes détectées, dont 855 attribuables. Sur 82
+  frappes adverses isolées, 3 seulement sont suivies d'une reprise en moins de 1 s. Une
+  frappe isolée ne vaut que 0,5 point par image : il faut 20 images pour payer un changement de
+  coût 10, donc le décodeur ignore déjà les déviations brèves. Règle gardée.
