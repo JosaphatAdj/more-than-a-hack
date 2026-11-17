@@ -1,0 +1,2 @@
+# Le fichier soumis doit sortir identique, octet par octet : fins de ligne LF partout.
+*.csv text eol=lf

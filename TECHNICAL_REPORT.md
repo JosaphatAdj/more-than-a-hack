@@ -205,7 +205,7 @@ See [README.md](README.md). In short:
 ```bash
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements-lock.txt
-.venv/Scripts/python -m possession.run --name <team_name>
+.venv/Scripts/python -m possession.run --name goal_tensor --out .   # writes goal_tensor.csv
 ```
 
 Inputs are `data/tactical/BAR-ATH_tactical_atd.{xml,txt}` and

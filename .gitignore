@@ -63,8 +63,5 @@ venv/
 env/
 .DS_Store
 
-# -- video/ : environnement, poids et sorties du détecteur -----------------------------------------
-.venv-video/
-*.pt
-runs/
-
+# -- travaux hors tour 5 (notebook SAM3, video/, essais) : gardés en local, hors du dépôt -------
+hors_tour5/

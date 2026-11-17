@@ -134,7 +134,7 @@ Le tracking seul est considéré comme épuisé : la suite est la vidéo (tour v
 
 - YOLO abandonné pour ce rendu : pas de GPU sur la machine de travail, et PyTorch impossible à
   télécharger (réseau à environ 12 Ko/s, soit plusieurs heures). Les scripts `video/` restent
-  prêts pour une machine avec GPU.
+  prêts pour une machine avec GPU (gardés en local dans `hors_tour5/`, hors du dépôt).
 - Cibles : sur les 64 643 images notées sans ballon, 55 553 portent déjà un indice d'arrêt ;
   seules 8 883 n'ont aucun avis (`python -m video.targets`).
 - Détecteur classique OpenCV (objet petit et clair, mouvement entre images) testé en simulant des
