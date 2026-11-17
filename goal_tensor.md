@@ -1,6 +1,8 @@
-# Technical report — rule-based possession from automatic tracking
+# Goal Tensor — rule-based possession from automatic tracking
 
-More than a Hack 2027, Phase 1: ball possession, FC Barcelona vs Athletic Club.
+Technical document of team **Goal Tensor** for More than a Hack 2027, Phase 1: ball possession,
+FC Barcelona vs Athletic Club. Submitted file: `goal_tensor.csv`. Code:
+https://github.com/JosaphatAdj/more-than-a-hack
 
 ## 1. Approach
 
@@ -33,12 +35,14 @@ We did test a self-trained model (section 6); it did not help.
 | Tactical tracking (ATD) | yes | ball and player positions, player speeds, team of each track |
 | Smart Tagging | yes | set pieces (restarts, team), goals, kick-offs |
 | Homography | no | measured, dropped (section 6) |
-| Tactical video | no | not used in this version |
+| Tactical video | no | ball detection tried (OpenCV, then SAM3), dropped (section 6) |
 | Broadcast video, tracking and homography | no | not synchronised with the tactical feed; not needed by the method |
 | Public 5-minute ground truth | checking only | see section 7 |
 
 **Training data: none.** No labelled data of any kind was used, from this match or any other.
-There is no learned component in the submitted pipeline.
+There is no learned component in the submitted pipeline. (A team member also explored open
+Bundesliga tracking data with official possession labels, DFL/IDSSE on Figshare, to evaluate
+rule settings on other matches; nothing from that exploration is in the submitted pipeline.)
 
 **Alignment.** Tracking record `frame_id` is video frame `frame_id − 1`; Smart Tagging seconds × 25
 is the video frame. Frames outside the two halves (`games.half_video_blocks`) are written as `X`.
@@ -169,6 +173,10 @@ match.
 | Direction of collective movement | right team 60 % of the time | dropped |
 | Camera aim from the homography, as a ball proxy | follows the ball only within 12 m (median) | dropped |
 | Direction of camera pan | right team 55–70 % of the time | dropped |
+| Ball detection in the tactical video with a classic OpenCV detector (small bright moving object) | tested by hiding the ball where the tracking sees it: worse than plain interpolation for 1 s gaps (61 % vs 67 % within 20 px), both fail beyond 3 s | dropped |
+| Ball detection with SAM3 (zero-shot, prompt "soccer ball", no training), tracked with Viterbi + Kalman, in a separate notebook | fills only 6 % of live-ball frames; same public `spellF1` with or without it (0.5625 at the same switch cost); needs a GPU and precomputed detections, so the submission could not be regenerated from the repository | dropped |
+| Restart instant detected per set piece (first attributable kick after the tag start) instead of a fixed 5 s offset | on corners the kicker matches the tagged team 3 times out of 11: the ball is not tracked at the corner flag 83 % of the time | dropped, fixed offset kept |
+| Team of a throw-in (tagged `N/A`) taken from the team in possession before the stoppage | checked on tags whose team is known: 9/12 on corners but 6/10 on goal kicks, close to chance | dropped |
 | Self-trained classifier on players only (105 features over ±4 s windows, pseudo-labels from confident rule frames, trained on one half and tested on the other) | 83 % correct with the ball hidden; no `spellF1` gain when used as weak evidence, a loss when used widely, because its smooth features blur transition timing | dropped |
 
 ## 7. Limitations
@@ -177,13 +185,20 @@ match.
   information. A change of possession there is placed in the middle of the gap at best.
 - **Short stoppages.** Stoppages with the ball still tracked and players moving, such as a quick
   throw-in, are missed: 57 % of dead-ball frames are recovered on the public window.
-- **Deflections.** A deflection looks like a kick to the last-kicker rule and can hand possession
-  to the deflecting team for up to 3 s. This is probably why we predict 22 possessions for 17 on
-  the public window.
+- **Deflections.** A deflection looks like a kick to the last-kicker rule. At 0.5 per frame it
+  needs 20 frames to pay for a switch, so brief deflections are absorbed; of 82 isolated opponent
+  kicks on the match, only 3 are followed by a re-kick within 1 s. Longer ones can still create a
+  short spurious possession: we predict 22 possessions for 17 on the public window.
 - **Goalkeeper holding the ball.** After 2 s this becomes a stationary-ball stoppage, while it is
-  live play.
-- **Goal tags.** The dead-ball window after a goal starts 2 s after the tag start. If a tag starts
-  at the beginning of the attack rather than at the goal, part of a live attack is labelled `D`.
+  live play. Measured on the match, the case (ball still in a penalty area, a player at the ball,
+  players running) covers 0.02 % of frames.
+- **Goal tags.** The dead-ball window after a goal starts 2 s after the tag start. We checked the
+  four goals: players are already walking at the tag start and the ball then goes back to the
+  centre circle, so the tags start at the goal, not at the attack.
+- **Share of dead ball.** 48 % of graded frames are `D`, about 55 minutes of effective play out
+  of 106 graded minutes (including 11 minutes of stoppage after the goals). This is the usual
+  order of magnitude for a professional match, but the public window, a very active stretch, has
+  only 20 % `D`.
 - **Very short possessions.** Possessions shorter than about 0.8 s cannot be produced by
   construction.
 - **Use of the public window.** No parameter was optimised on it. However, while designing the
@@ -195,8 +210,9 @@ match.
 
 - detect the ball in the tactical video to fill the 41 % gap;
 - treat a kick as a change of possession only if the kicker's team keeps the ball afterwards;
-- check where goal tags start;
-- require slow players before calling a stationary ball dead.
+- require slow players before calling a stationary ball dead;
+- validate the settings on other matches with ground truth (for example the open DFL data),
+  after degrading them to look like this tracking (ball gaps, position noise).
 
 ## 8. Reproduction
 

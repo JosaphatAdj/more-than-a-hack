@@ -6,7 +6,7 @@ has the ball, or whether the ball is dead (`D`).
 
 The method is a set of rules on the provided automatic tracking and Smart Tagging, decoded with a
 Viterbi pass over each half. No video, no external data, no training, no ground truth. It is
-described in [TECHNICAL_REPORT.md](TECHNICAL_REPORT.md).
+described in [goal_tensor.md](goal_tensor.md).
 
 The organisers' starter kit is kept unchanged in this repository (`evaluation/`, `starter/`,
 `games.py` and the challenge documents); its original README is [README_KIT.md](README_KIT.md).
@@ -61,7 +61,7 @@ possession/
   decode.py      Viterbi decoder and placement of the transitions
   run.py         the single command: data -> <name>.csv
 goal_tensor.csv          the submitted file (output of the command above)
-TECHNICAL_REPORT.md      the technical document
+goal_tensor.md      the technical document
 REGLES_POSSESSION.md     the rules in detail (French)
 PLAN.md                  working plan and results log (French)
 requirements-lock.txt    pinned dependencies
